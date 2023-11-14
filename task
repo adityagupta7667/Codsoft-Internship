@@ -1,0 +1,75 @@
+import os
+
+def display_menu():
+    print("\nTo-Do List Menu:")
+    print("1. View To-Do List")
+    print("2. Add Task")
+    print("3. Complete Task")
+    print("4. Delete Task")
+    print("5. Exit")
+
+def view_todo_list(todo_list):
+    print("\nTo-Do List:")
+    if not todo_list:
+        print("No tasks found.")
+    else:
+        for i, task in enumerate(todo_list, start=1):
+            print(f"{i}. {task['description']} - {'Complete' if task['complete'] else 'Incomplete'}")
+
+def add_task(todo_list, description):
+    todo_list.append({"description": description, "complete": False})
+    print("Task added successfully.")
+
+def complete_task(todo_list, task_index):
+    if 1 <= task_index <= len(todo_list):
+        todo_list[task_index - 1]["complete"] = True
+        print("Task marked as complete.")
+    else:
+        print("Invalid task index.")
+
+def delete_task(todo_list, task_index):
+    if 1 <= task_index <= len(todo_list):
+        del todo_list[task_index - 1]
+        print("Task deleted successfully.")
+    else:
+        print("Invalid task index.")
+
+def save_todo_list(todo_list, filename="todo_list.txt"):
+    with open(filename, "w") as file:
+        for task in todo_list:
+            file.write(f"{task['description']},{task['complete']}\n")
+
+def load_todo_list(filename="todo_list.txt"):
+    todo_list = []
+    if os.path.exists(filename):
+        with open(filename, "r") as file:
+            for line in file:
+                description, complete_str = line.strip().split(',')
+                complete = True if complete_str.lower() == 'true' else False
+                todo_list.append({"description": description, "complete": complete})
+    return todo_list
+
+if __name__ == "__main__":
+    todo_list = load_todo_list()
+
+    while True:
+        display_menu()
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == '1':
+            view_todo_list(todo_list)
+        elif choice == '2':
+            task_description = input("Enter task description: ")
+            add_task(todo_list, task_description)
+        elif choice == '3':
+            task_index = int(input("Enter task index to mark as complete: "))
+            complete_task(todo_list, task_index)
+        elif choice == '4':
+            task_index = int(input("Enter task index to delete: "))
+            delete_task(todo_list, task_index)
+        elif choice == '5':
+            save_todo_list(todo_list)
+            print("Exiting the To-Do List application. Your tasks are saved.")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 5.")
